@@ -1,6 +1,5 @@
 import requests
 import os
-import subprocess
 import zipfile
 import json
 import getpass
@@ -18,6 +17,8 @@ from selenium.webdriver.edge.service import Service
 
 _k1 = "_n"
 _k2 = "_s"
+
+current_dir = os.getcwd()
 
 
 def checkCred():
@@ -46,7 +47,7 @@ def getAccess():
     edge_options.add_argument("headless")
     edge_options.add_argument("disable-gpu")
     try:
-        webdriver = Edge(executable_path="C:\\Users\\DELL\\Desktop\\FU\\ps_selenium\\msedgedriver.exe",
+        webdriver = Edge(executable_path=f"{current_dir}\\ps_selenium\\msedgedriver.exe",
                          options=edge_options)
         reTry = 3
     except Exception as e:
@@ -59,7 +60,7 @@ def getAccess():
         request_download_driver = requests.get(
             "https://msedgedriver.azureedge.net/"+VERSION+"/edgedriver_win64.zip")
         zip_file = zipfile.ZipFile(io.BytesIO(request_download_driver.content))
-        zip_file.extractall("C:\\Users\\DELL\\Desktop\\FU\\ps_selenium")
+        zip_file.extractall(f"{current_dir}\\ps_selenium")
         print("Updated new web driver version! Please re-run the program")
         quit()
 
