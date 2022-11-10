@@ -6,6 +6,8 @@ import getpass
 import re
 import io
 import sys
+import xml.etree.ElementTree as ET
+from os import path
 from datetime import date
 from bs4 import BeautifulSoup
 from selenium.webdriver.chrome.options import Options
@@ -19,6 +21,7 @@ _k1 = "_n"
 _k2 = "_s"
 
 current_dir = os.getcwd()
+selenium_path = f"{current_dir}\\msedgedriver.exe"
 
 
 def checkCred():
@@ -36,7 +39,21 @@ def checkCred():
         except Exception as e:
             print('Error: {}'.format(e))
     else:
-        print('Accessing data of user {}'.format(cre_u))
+        print('[*] Accessing data of user {}'.format(cre_u))
+
+
+def getLastestESver():
+    rq_new_driver = requests.get("https://msedgedriver.azureedge.net/").content
+    xml_response = ET.fromstring(rq_new_driver)
+    return xml_response.find('Blobs').find('Blob').find('Name').text.split('/')[0]
+
+
+def downloadES(VERSION):
+    request_download_driver = requests.get(
+        "https://msedgedriver.azureedge.net/"+VERSION+"/edgedriver_win64.zip")
+    zip_file = zipfile.ZipFile(io.BytesIO(request_download_driver.content))
+    zip_file.extractall(f"{current_dir}")
+    print("Updated new web driver version! Please re-run the program")
 
 
 def getAccess():
@@ -46,8 +63,11 @@ def getAccess():
     edge_options.add_argument("--log-level=OFF")
     edge_options.add_argument("headless")
     edge_options.add_argument("disable-gpu")
+    if not path.exists(selenium_path):
+        print('[*] Get new dirver!!!')
+        downloadES(getLastestESver())
     try:
-        webdriver = Edge(executable_path=f"{current_dir}\\ps_selenium\\msedgedriver.exe",
+        webdriver = Edge(executable_path=selenium_path,
                          options=edge_options)
         reTry = 3
     except Exception as e:
@@ -57,12 +77,7 @@ def getAccess():
         version_notify = str(e)
         dr_version = re.findall(r"is ([\d.]*\d+)", version_notify)
         VERSION = dr_version[0]
-        request_download_driver = requests.get(
-            "https://msedgedriver.azureedge.net/"+VERSION+"/edgedriver_win64.zip")
-        zip_file = zipfile.ZipFile(io.BytesIO(request_download_driver.content))
-        zip_file.extractall(f"{current_dir}\\ps_selenium")
-        print("Updated new web driver version! Please re-run the program")
-        quit()
+        downloadES(VERSION)
 
     try:
         wait = WebDriverWait(webdriver, 4)
