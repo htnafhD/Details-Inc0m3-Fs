@@ -54,7 +54,7 @@ def downloadES(VERSION):
     zip_file = zipfile.ZipFile(io.BytesIO(request_download_driver.content))
     zip_file.extractall(f"{current_dir}")
     print("Updated new web driver version! Please re-run the program")
-
+    quit()
 
 def getAccess():
     reTry = 1
@@ -67,8 +67,7 @@ def getAccess():
         print('[*] Get new dirver!!!')
         downloadES(getLastestESver())
     try:
-        webdriver = Edge(executable_path=selenium_path,
-                         options=edge_options)
+        webdriver = Edge(executable_path=selenium_path, options=edge_options)
         reTry = 3
     except Exception as e:
         reTry += 1
@@ -82,16 +81,11 @@ def getAccess():
     try:
         wait = WebDriverWait(webdriver, 4)
         webdriver.get("https://myfpt.fpt-software.vn/api/login-ms/adfs/login")
-        f_soft = wait.until(EC.element_to_be_clickable(
-            (By.XPATH, '/html/body/div[2]/div[2]/div/main/div/div/form/div[1]/div[4]/div/span'))).click()
-        f_soft_lim = wait.until(EC.element_to_be_clickable(
-            (By.XPATH, '/html/body/div[2]/div[2]/div[1]/div[2]/div/form/div[1]/div[2]/div/span'))).click()
-        useEle = wait.until(EC.visibility_of_element_located(
-            (By.ID, 'userNameInput'))).send_keys(str(os.getenv(_k1, default=None)))
-        pasEle = wait.until(EC.visibility_of_element_located(
-            (By.ID, "passwordInput"))).send_keys(str(os.getenv(_k2, default=None)))
-        login_button = wait.until(EC.element_to_be_clickable(
-            (By.XPATH, '//*[@id="submitButton"]'))).click()
+        f_soft = wait.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[2]/div[2]/div/main/div/div/form/div[1]/div[4]/div/span'))).click()
+        f_soft_lim = wait.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[2]/div[2]/div[1]/div[2]/div/form/div[1]/div[2]/div/span'))).click()
+        useEle = wait.until(EC.visibility_of_element_located((By.ID, 'userNameInput'))).send_keys(str(os.getenv(_k1, default=None)))
+        pasEle = wait.until(EC.visibility_of_element_located((By.ID, "passwordInput"))).send_keys(str(os.getenv(_k2, default=None)))
+        login_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="submitButton"]'))).click()
     except Exception as e:
         print("Error: ", str(e))
 
@@ -125,8 +119,7 @@ def accessSite(year, month, response):
         'X-Access-Token': response['token'],
         'Adfsidtoken': response['adfsIdToken']
     }
-    _url = "https://myfpt.fpt-software.vn/api/fpt-services-ms/public/payslip/my-income?monthYear={}-{}".format(
-        year, f_month)
+    _url = "https://myfpt.fpt-software.vn/api/fpt-services-ms/public/payslip/my-income?monthYear={}-{}".format(year, f_month)
 
     try:
         _ps = requests.get(_url, headers=_headers).json()
@@ -151,11 +144,10 @@ def accessSite(year, month, response):
                     total_net = getResult(months)
             else:
                 total_net += getResult(months)
-        print('''[*] Total NET income: {}
-=========================================================='''.format(total_net))
+        print(f'''[*] Total NET income: {total_net}
+==========================================================''')
     except Exception as e:
-        print('[!] Key Error: '+str(e) +
-              '\n[!] Perhalf your contract is not yet started, try change the date time value!')
+        print('[!] Key Error: '+str(e) +'\n[!] Perhalf your contract is not yet started, try change the date time value!')
 
 
 def argRun():
