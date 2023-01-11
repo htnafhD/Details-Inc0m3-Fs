@@ -56,6 +56,7 @@ def downloadES(VERSION):
     print("Updated new web driver version! Please re-run the program")
     quit()
 
+
 def getAccess():
     reTry = 1
     edge_options = EdgeOptions()
@@ -81,11 +82,16 @@ def getAccess():
     try:
         wait = WebDriverWait(webdriver, 4)
         webdriver.get("https://myfpt.fpt-software.vn/api/login-ms/adfs/login")
-        f_soft = wait.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[2]/div[2]/div/main/div/div/form/div[1]/div[4]/div/span'))).click()
-        f_soft_lim = wait.until(EC.element_to_be_clickable((By.XPATH, '/html/body/div[2]/div[2]/div[1]/div[2]/div/form/div[1]/div[2]/div/span'))).click()
-        useEle = wait.until(EC.visibility_of_element_located((By.ID, 'userNameInput'))).send_keys(str(os.getenv(_k1, default=None)))
-        pasEle = wait.until(EC.visibility_of_element_located((By.ID, "passwordInput"))).send_keys(str(os.getenv(_k2, default=None)))
-        login_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="submitButton"]'))).click()
+        f_soft = wait.until(EC.element_to_be_clickable(
+            (By.XPATH, '/html/body/div[2]/div[2]/div/main/div/div/form/div[1]/div[4]/div/span'))).click()
+        f_soft_lim = wait.until(EC.element_to_be_clickable(
+            (By.XPATH, '/html/body/div[2]/div[2]/div[1]/div[2]/div/form/div[1]/div[2]/div/span'))).click()
+        useEle = wait.until(EC.visibility_of_element_located(
+            (By.ID, 'userNameInput'))).send_keys(str(os.getenv(_k1, default=None)))
+        pasEle = wait.until(EC.visibility_of_element_located(
+            (By.ID, "passwordInput"))).send_keys(str(os.getenv(_k2, default=None)))
+        login_button = wait.until(EC.element_to_be_clickable(
+            (By.XPATH, '//*[@id="submitButton"]'))).click()
     except Exception as e:
         print("Error: ", str(e))
 
@@ -109,22 +115,27 @@ def getResult(months):
 
 
 def accessSite(year, month, response):
-    c_year, c_month, c_day = str(date.today()).split('-')
     f_month = month
+    c_year, c_month, c_day = str(date.today()).split('-')
     if month == 'a':
-        f_month = int(c_month) if int(c_day) >= 19 else int(c_month) - 1
+        if c_year > year:
+            f_month = 12
+        else:
+            f_month = int(c_month) if int(c_day) >= 19 else int(c_month) - 1
 
     _headers = {
         'User-Agent': 'myFPT/4.10.9 iPhone12,1 iOS/14.3',
         'X-Access-Token': response['token'],
         'Adfsidtoken': response['adfsIdToken']
     }
-    _url = "https://myfpt.fpt-software.vn/api/fpt-services-ms/public/payslip/my-income?monthYear={}-{}".format(year, f_month)
+    _url = "https://myfpt.fpt-software.vn/api/fpt-services-ms/public/payslip/my-income?monthYear={}-{}".format(
+        year, f_month)
 
     try:
         _ps = requests.get(_url, headers=_headers).json()
         ps = _ps['Data']
     except Exception as e:
+        print(_ps)
         print(str(e))
         quit()
     ic_month = ps['API_FPT_PAYSLIP_INCOME']
@@ -147,7 +158,8 @@ def accessSite(year, month, response):
         print(f'''[*] Total NET income: {total_net}
 ==========================================================''')
     except Exception as e:
-        print('[!] Key Error: '+str(e) +'\n[!] Perhalf your contract is not yet started, try change the date time value!')
+        print('[!] Key Error: '+str(e) +
+              '\n[!] Perhalf your contract is not yet started or the salary you request is not yet available - Try change the date time request!')
 
 
 def argRun():
@@ -173,11 +185,11 @@ def argRun():
 
 
 def main():
-    checkCred()
     try:
         if len(sys.argv) != 5:
             print('Instructions: python(3) ps.py -y [--year] -m [--month]')
         else:
+            checkCred()
             year, month = argRun()
             response = getAccess()
             accessSite(year, month, response)
