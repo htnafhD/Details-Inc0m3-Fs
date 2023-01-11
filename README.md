@@ -1,5 +1,8 @@
 # Details-Inc0m3-Fs
 Get ur details inCym
+### [*] Update 11 Jan 23:
+#### + Flow for a smoother run.
+#### + Fix an error for retrieving between years 
 ### Instruction:
 ```python(3) ps.py -y [--year] -m [--month]```
 ### Output:
